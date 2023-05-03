@@ -3,45 +3,44 @@ using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
-namespace VarietyMattersMoreCompat
+namespace VarietyMattersMoreCompat;
+
+[UsedImplicitly]
+public class VarietyMattersMoreCompatMod : Mod
 {
-    [UsedImplicitly]
-    public class VarietyMattersMoreCompatMod : Mod
+    public static VarietyMattersMoreCompatSettings Settings;
+
+    public VarietyMattersMoreCompatMod(ModContentPack content) : base(content)
     {
-        public static VarietyMattersMoreCompatSettings Settings;
+        Settings = GetSettings<VarietyMattersMoreCompatSettings>();
+        new Harmony("Dra.VarietyMattersMoreCompat").PatchAll();
+        LongEventHandler.ExecuteWhenFinished(DefLists.Init);
 
-        public VarietyMattersMoreCompatMod(ModContentPack content) : base(content)
+        var hasVariety = false;
+        var hasSupported = false;
+
+        foreach (var mod in LoadedModManager.RunningMods)
         {
-            Settings = GetSettings<VarietyMattersMoreCompatSettings>();
-            new Harmony("Dra.VarietyMattersMoreCompat").PatchAll();
-            LongEventHandler.ExecuteWhenFinished(DefLists.Init);
+            var id = mod.PackageId.ToLower().NoModIdSuffix();
 
-            var hasVariety = false;
-            var hasSupported = false;
-
-            foreach (var mod in LoadedModManager.RunningMods)
+            if (!hasVariety && id is "cozarkian.varietymattersimproved" or "cozarkian.varietymattersimproved_1_4fork")
             {
-                var id = mod.PackageId.ToLower().NoModIdSuffix();
-
-                if (!hasVariety && id is "cozarkian.varietymattersimproved" or "cozarkian.varietymattersimproved_1_4fork")
-                {
-                    hasVariety = true;
-                    if (hasSupported) break;
-                }
-                else if (!hasSupported && id is "vanillaexpanded.vcooke" or "mrkociak.morearchotechstuffandthingsreupload")
-                {
-                    hasSupported = true;
-                    if (hasVariety) break;
-                }
+                hasVariety = true;
+                if (hasSupported) break;
             }
-
-            if (!hasVariety)
-                Log.Error("[Variety Matters - More Compat] - Variety Matters is not running, having this mod enabled is pointless.");
-            else if (!hasSupported)
-                Log.Error("[Variety Matters - More Compat] - no supported mod is running, having this mod enabled is pointless.");
+            else if (!hasSupported && id is "vanillaexpanded.vcooke" or "mrkociak.morearchotechstuffandthingsreupload")
+            {
+                hasSupported = true;
+                if (hasVariety) break;
+            }
         }
 
-        public override string SettingsCategory() => "Variety Matters - More Compat";
-        public override void DoSettingsWindowContents(Rect inRect) => Settings.DoSettingsWindowContents(inRect);
+        if (!hasVariety)
+            Log.Error("[Variety Matters - More Compat] - Variety Matters is not running, having this mod enabled is pointless.");
+        else if (!hasSupported)
+            Log.Error("[Variety Matters - More Compat] - no supported mod is running, having this mod enabled is pointless.");
     }
+
+    public override string SettingsCategory() => "Variety Matters - More Compat";
+    public override void DoSettingsWindowContents(Rect inRect) => Settings.DoSettingsWindowContents(inRect);
 }
