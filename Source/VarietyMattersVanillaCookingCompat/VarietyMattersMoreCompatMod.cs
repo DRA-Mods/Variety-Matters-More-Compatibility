@@ -23,7 +23,7 @@ namespace VarietyMattersMoreCompat
             {
                 var id = mod.PackageId.ToLower().NoModIdSuffix();
 
-                if (!hasVariety && id is "cozarkian.varietymattersimproved")
+                if (!hasVariety && id is "cozarkian.varietymattersimproved" or "cozarkian.varietymattersimproved_1_4fork")
                 {
                     hasVariety = true;
                     if (hasSupported) break;
