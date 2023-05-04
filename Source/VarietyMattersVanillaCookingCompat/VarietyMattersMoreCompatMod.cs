@@ -5,16 +5,16 @@ using Verse;
 
 namespace VarietyMattersMoreCompat;
 
-[UsedImplicitly]
 public class VarietyMattersMoreCompatMod : Mod
 {
-    public static VarietyMattersMoreCompatSettings Settings;
+    public static VarietyMattersMoreCompatSettings settings;
+    public static Harmony harmony;
 
     public VarietyMattersMoreCompatMod(ModContentPack content) : base(content)
     {
-        Settings = GetSettings<VarietyMattersMoreCompatSettings>();
-        new Harmony("Dra.VarietyMattersMoreCompat").PatchAll();
-        LongEventHandler.ExecuteWhenFinished(DefLists.Init);
+        settings = GetSettings<VarietyMattersMoreCompatSettings>();
+        harmony = new Harmony("Dra.VarietyMattersMoreCompat");
+        harmony.PatchAll();
 
         var hasVariety = false;
         var hasSupported = false;
@@ -42,5 +42,5 @@ public class VarietyMattersMoreCompatMod : Mod
     }
 
     public override string SettingsCategory() => "Variety Matters - More Compat";
-    public override void DoSettingsWindowContents(Rect inRect) => Settings.DoSettingsWindowContents(inRect);
+    public override void DoSettingsWindowContents(Rect inRect) => settings.DoSettingsWindowContents(inRect);
 }

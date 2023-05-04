@@ -23,22 +23,32 @@ public static class HarmonyPatches
             if (ModSettings_VarietyMatters.ignoreIngredients)
                 return;
 
-            var dessertQuality = DefLists.desserts.TryGetValue(foodSource.def, -1);
+            var dessertQuality = -1;
+            var isArchotech = false;
+            var ignorePreferability = false;
             var preferability = foodSource.def.ingestible.preferability;
+            var settings = VarietyMattersMoreCompatMod.settings;
+            
+            var extension = foodSource.def.GetModExtension<VarietyExtension>();
+            if (extension != null)
+            {
+                dessertQuality = extension.dessertQuality;
+                ignorePreferability = dessertQuality >= 0 || extension.ignoreFoodPreferability || extension.isArchotech;
+                if (settings.betterArchotech)
+                    isArchotech = extension.isArchotech;
+            }
 
-            if (preferability <= FoodPreferability.RawBad && dessertQuality < 0)
+            if (preferability <= FoodPreferability.RawBad && !ignorePreferability)
                 return;
 
             var ingredients = foodSource.TryGetComp<CompIngredients>();
             if (ingredients == null)
                 return;
 
-            var settings = VarietyMattersMoreCompatMod.Settings;
             var condiments = !settings.betterGourmet || stackByCondimentType == null ? null : (foodSource as ThingWithComps)?.AllComps.FirstOrDefault(x => stackByCondimentType.IsInstanceOfType(x));
             var baseExpectation = !settings.fixDesserts ? -1 : (int)VarietyExpectation.GetBaseVarietyExpectation(ingester);
-            var isArchotech = settings.betterArchotech && DefLists.archotechs.Contains(foodSource.def);
 
-            if (!isArchotech && dessertQuality <= 0 && condiments == null)
+            if (ignorePreferability && condiments == null)
                 return;
 
             if (ingredients.ingredients.Count == 0 && !ModSettings_VarietyMatters.maxVariety)
