@@ -17,7 +17,6 @@ public static class HarmonyPatches
     {
         private static Type stackByCondimentType = AccessTools.TypeByName("VanillaCookingExpanded.CompStackByCondiments");
 
-        [UsedImplicitly]
         private static void Postfix(ref Pawn_VarietyTracker pawnRecord, Pawn ingester, Thing foodSource)
         {
             if (ModSettings_VarietyMatters.ignoreIngredients)
